@@ -1,0 +1,6 @@
+face_gan/networks/
+face_gan/aligned_images/
+face_gan/encoder_model/
+face_gan/generated_images/
+face_gan/raw_images/
+face_gan/output/
