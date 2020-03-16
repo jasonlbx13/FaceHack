@@ -1,5 +1,13 @@
 import cv2
+import argparse
 
-img = cv2.imread('./raw_images/smstyle1.jpeg')
-img = cv2.resize(img,(1024,1024))
-cv2.imwrite('./raw_images/smstyle1.jpeg', img)
+parser = argparse.ArgumentParser(description='resize pictures')
+parser.add_argument('img_dir', help='image direction')
+parser.add_argument('img_height', help='image height')
+parser.add_argument('img_weight', help='image weight')
+args = parser.parse_args()
+
+img = cv2.imread(args.img_dir)
+img = cv2.resize(img,(int(args.img_weight), int(args.img_height)))
+cv2.imwrite(args.img_dir, img)
+print ('done')

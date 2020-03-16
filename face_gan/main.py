@@ -187,9 +187,6 @@ def align(args):
                                                LANDMARKS_MODEL_URL, cache_subdir='temp'))
     RAW_IMAGES_DIR = args.align_dir
     ALIGNED_IMAGES_DIR = args.src_dir
-    if os.path.exists(ALIGNED_IMAGES_DIR):
-        shutil.rmtree(ALIGNED_IMAGES_DIR)
-    os.makedirs(args.align_dir, exist_ok=True)
     landmarks_detector = LandmarksDetector(landmarks_model_path)
     for img_name in [f for f in os.listdir(RAW_IMAGES_DIR) if f[0] not in '._']:
         raw_img_path = os.path.join(RAW_IMAGES_DIR, img_name)
