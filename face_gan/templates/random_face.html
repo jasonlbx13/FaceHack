@@ -1,10 +1,51 @@
-{% extends 'base.html' %} #这个模板继承了基模板，为名为"body"的块提供了一个替代块
+{% extends 'base.html' %}
+{% block head %}
+<style>
+body {background-color: black}
+</style>
+<font color="white">
+<div align="center"><h1>"Create a unique face in the world!"</h1></div>
+</font>
+<script type="text/javascript">
 
+function reloadPage()
+    {
+        window.location.href=window.location.href
+        window.location.reload()
+    }
+</script>
+<style>
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #be2a00;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+  margin:0 auto
+}
+
+.button:hover {background-color: #ed3400}
+
+.button:active {
+  background-color: #ff5829;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+</style>
+{% endblock %}
 {% block body %}
-
-
-<p> 
-<img src="../static/random_face.jpg" width="512" height="512" /> 
-</p> 
+<div align="center"><img src="../static/random_face.jpg" width="512" height="512" align="center" /></div>
+<br>
+<div style="margin:0 auto;width:200px;">
+<input type="button" class="button" value="Make Face!" onclick="reloadPage()" />
+</div>
 
 {% endblock %}
