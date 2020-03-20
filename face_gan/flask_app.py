@@ -10,6 +10,7 @@ import tensorflow as tf
 import urllib
 import imageio
 import os
+from datetime import timedelta
 import keras.backend.tensorflow_backend as KTF
 import shutil
 from tqdm import tqdm
@@ -27,7 +28,7 @@ from ffhq_dataset.landmarks_detector import LandmarksDetector
 
 class FaceHack():
     def __init__(self):
-        self.network_pkl = './networks/star_face.pkl'
+        self.network_pkl = './networks/normal_face.pkl'
         tflib.init_tf()
         self.session = tf.get_default_session()
         self.graph = tf.get_default_graph()
@@ -63,47 +64,94 @@ class FaceHack():
                 # Generate image
                 images = self.Gs_network.run(z, None, **self.Gs_syn_kwargs)  # [minibatch, height, width, channel]
         PIL.Image.fromarray(images[0], 'RGB').save(
-            dnnlib.make_run_dir_path('./static/random_face.jpg'))
+            dnnlib.make_run_dir_path('./static/img/random_face.jpg'))
 
-    # def move_latent(latent_vector, Gs_network, Gs_syn_kwargs):
-    #     new_latent_vector = latent_vector.copy()
-    #     new_latent_vector[0][:8] = (latent_vector[0] + smile * smile_drt + age * age_drt + gender * gender_drt
-    #                                 + beauty * beauty_drt + angleh * angleh_drt + anglep * anglep_drt
-    #                                 + raceblack * raceblack_drt + raceyellow * raceyellow_drt + racewhite * racewhite_drt
-    #                                 + glasses * glasses_drt)[:8]
-    #     images = Gs_network.components.synthesis.run(new_latent_vector, **Gs_syn_kwargs)
-    #     result = PIL.Image.fromarray(images[0], 'RGB')
-    #     return result
+    def restore(self, npy_dir, img_dir):
+        print (npy_dir)
+        w = np.load(npy_dir)[np.newaxis, :]
+        with self.graph.as_default():
+            with self.session.as_default():
+                images = self.Gs_network.components.synthesis.run(w, **self.Gs_syn_kwargs)
+            PIL.Image.fromarray(images[0], 'RGB').save(dnnlib.make_run_dir_path(img_dir))
+
+
+    def move_latent(self, npy_dir, Gs_network, Gs_syn_kwargs, *args):
+        latent_vector = np.load(npy_dir)[np.newaxis, :]
+        smile, age, gender, beauty, angleh, anglep, raceblack, raceyellow, racewhite = args
+        new_latent_vector = latent_vector.copy()
+        new_latent_vector[0][:8] = (latent_vector[0] + smile * self.smile_drt + age * self.age_drt + gender * self.gender_drt
+                                    + beauty * self.beauty_drt + angleh * self.angleh_drt + anglep * self.anglep_drt
+                                    + raceblack * self.raceblack_drt + raceyellow * self.raceyellow_drt + racewhite * self.racewhite_drt)[:8]
+        with self.graph.as_default():
+            with self.session.as_default():
+                images = Gs_network.components.synthesis.run(new_latent_vector, **Gs_syn_kwargs)
+        PIL.Image.fromarray(images[0], 'RGB').save(
+            dnnlib.make_run_dir_path('./static/img/edit_face.jpg'))
+
 
     def make_app(self):
         app = Flask(__name__)
-
+        app.send_file_max_age_default = timedelta(seconds=0.2)
         @app.route('/')
         def hello():
-            return render_template('base.html', the_title='Welcome FaceHack!')
+            return render_template('index.html', the_title='Welcome FaceHack!')
 
-        @app.route('/givemeaface', methods=["POST","GET"])
+        @app.route('/guide')
+        def guide():
+            return render_template('guide.html')
+
+        @app.route('/givemeaface', methods=['GET', 'POST'])
         def random_face():
 
             self.random_generate()
             return render_template('random_face.html')
 
+
+        @app.route('/genface', methods=['GET', 'POST'])
+        def genface():
+            if request.method == 'POST':
+                npy_dir = './static/npy_file/genface.npy'
+                if os.path.exists(npy_dir):
+                    os.remove(npy_dir)
+                f = request.files['file']
+                f.save(npy_dir)
+                self.restore(npy_dir, './static/img/restore_face.jpg')
+                return render_template('restore_face.html')
+            return render_template('upload.html')
+
+        @app.route('/editupload', methods=['GET', 'POST'])
+        def edit_upload():
+            if request.method == 'GET':
+                return render_template('edit_upload.html')
+            if request.method == 'POST':
+                npy_dir = './static/npy_file/edit_face.npy'
+                f = request.files['file']
+                f.save(npy_dir)
+                self.restore(npy_dir, './static/img/edit_face.jpg')
+                return render_template('upload_down.html')
+
+
         @app.route('/edit', methods=['POST'])
         def edit_face():
-            face_dir = urllib.request.unquote(request.form.get('face_dir'))
-            w = np.load(face_dir)[np.newaxis, :]
-            with self.graph.as_default():
-                with self.session.as_default():
-                    image = self.Gs_network.components.synthesis.run(w, **self.Gs_syn_kwargs)
-            img = PIL.Image.fromarray(image[0], 'RGB')
-            save_dir = urllib.request.unquote(request.form.get('save_dir'))
-            img.save(save_dir)
-            return 'done'
-        @app.route('/genface', methods=["POST","GET"])
-        def genface():
-            print(request.form)  # 格式 ImmutableMultiDict([('username', '123'), ('pwd', '123')])
-            print(request.form.to_dict())  # 格式 {'username': '123', 'pwd': '123'}
-            return render_template("test.html")
+            if request.method == 'POST':
+                npy_dir = './static/npy_file/edit_face.npy'
+                if len(request.form) != 0:
+                    smile = float(request.form['smile'])
+                    age = float(request.form['age'])
+                    gender = float(request.form['gender'])
+                    beauty = float(request.form['beauty'])
+                    angleh = float(request.form['angleh'])
+                    anglep = float(request.form['anglep'])
+                    raceblack = float(request.form['raceblack'])
+                    raceyellow = float(request.form['raceyellow'])
+                    racewhite = float(request.form['racewhite'])
+                    feature_book = [smile, age, gender, beauty, angleh, anglep, raceblack, raceyellow, racewhite]
+                else:
+                    feature_book = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                self.move_latent(npy_dir, self.Gs_network, self.Gs_syn_kwargs, *feature_book)
+                return render_template('edit_face.html')
+
+
 
         return app
 
@@ -114,4 +162,5 @@ if __name__ == '__main__':
 
     facehack = FaceHack()
     app = facehack.make_app()
-    app.run(host='0.0.0.0', port=8080)
+    app.jinja_env.auto_reload = True
+    app.run(host='0.0.0.0', port=8080, debug=True)

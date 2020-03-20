@@ -295,6 +295,14 @@ def style_transform(args):
     img = PIL.Image.fromarray(img[0])
     img.save('{}/style_transform.png'.format(args.dst_dir))
 
+def str2bool(v):
+    if v.lower() in ('yes', 'True', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'False', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Unsupported value encountered.')
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='generate or edit pictures')
@@ -308,8 +316,8 @@ if __name__ == "__main__":
     subparser.add_argument('--num', default=10, help='generate images num')
     subparser.add_argument('--network_pkl', default='./networks/normal_face.pkl', help='stylegan pretrained module')
     subparser.add_argument('--dst_dir', default='output/', help='output direction')
-    subparser.add_argument('--save_latent', default=True, help='is save latenent or not')
-    subparser.add_argument('--save_dlatent', default=True, help='is save dlatenent or not')
+    subparser.add_argument('--save_latent', type=str2bool, default=True, help='is save latenent or not')
+    subparser.add_argument('--save_dlatent', type=str2bool, default=True, help='is save dlatenent or not')
 
     subparser = subparsers.add_parser("edit", help="edit face.")
     subparser.set_defaults(func=edit_images)
@@ -332,9 +340,9 @@ if __name__ == "__main__":
     subparser = subparsers.add_parser("transform", help="generate gradual transform face")
     subparser.set_defaults(func=transform_image)
     subparser.add_argument('--transform_mod', default='gradual', help='pic1 to pic2(pic2pic) or pic1 feature gradual transform(gradual)')
-    subparser.add_argument('--gif', default=False, help='generate gif or not')
+    subparser.add_argument('--gif', type=str2bool, default=False, help='generate gif or not')
     subparser.add_argument('--duration', default=5, help='duration of gif')
-    subparser.add_argument('--del_tmp', default=False, help='after generate gif if delete tmp pictures')
+    subparser.add_argument('--del_tmp', type=str2bool, default=False, help='after generate gif if delete tmp pictures')
     subparser.add_argument('--network_pkl', default='./networks/normal_face.pkl', help='stylegan pretrained module')
     subparser.add_argument('--dst_dir', default='./output', help='edit images direction')
     subparser.add_argument('--src_dir1', default='./latent_representations/sjl.npy', help='pic1 dir')
@@ -354,7 +362,7 @@ if __name__ == "__main__":
 
     subparser = subparsers.add_parser("encode", help="encode real face")
     subparser.set_defaults(func=encode_image)
-    subparser.add_argument('--align', default=True, help='find face in images and output 1024x1024 face(recommend)')
+    subparser.add_argument('--align', type=str2bool, default=False, help='find face in images and output 1024x1024 face(recommend)')
     subparser.add_argument('--align_dir', default='raw_images/', help='Directory with raw images for align')
     subparser.add_argument('--src_dir', default='aligned_images/', help='Directory with aligned images for projection')
     subparser.add_argument('--dst_dir', default='generated_images/', help='Output directory')
@@ -364,7 +372,7 @@ if __name__ == "__main__":
     subparser.add_argument('--num-steps', type=int, default=1000, help='Number of optimization steps')
     subparser.add_argument('--initial-learning-rate', type=float, default=0.1, help='Initial learning rate')
     subparser.add_argument('--initial-noise-factor', type=float, default=0.05, help='Initial noise factor')
-    subparser.add_argument('--verbose', type=bool, default=False, help='Verbose output')
+    subparser.add_argument('--verbose', type=str2bool, default=False, help='Verbose output')
 
     subparser = subparsers.add_parser("augmentation", help="face augmentation")
     subparser.set_defaults(func=augmentation)

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a9cbee;
+    }
+.button2 {
+    background-color: #474ce4;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	border-radius: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+
+.button2:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+</style>
+{% endblock %}
+{% block body %}
+      <form action = "http://localhost:8080/genface" method = "POST"
+         enctype = "multipart/form-data">
+          <div align="center"><input type = "file" name = "file" /></div>
+          <br>
+          <div align="center"><input type = "submit" class="button2" value="上传"/></div>
+      </form>
+{% endblock %}

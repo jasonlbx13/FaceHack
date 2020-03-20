@@ -1,0 +1,84 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FaceHack.com</title>
+    <div style="left: 800px; position: absolute; top: 100px;">
+        <font color="white">
+            <div align="center"><h1>"Edit Your Face!"</h1></div>
+        </font>
+    </div>
+    <script type="text/javascript">
+		function show(){
+            document.getElementById("num1").value = document.getElementById("slider1").value;
+			document.getElementById("num2").value = document.getElementById("slider2").value;
+			document.getElementById("num3").value = document.getElementById("slider3").value;
+			document.getElementById("num4").value = document.getElementById("slider4").value;
+			document.getElementById("num5").value = document.getElementById("slider5").value;
+			document.getElementById("num6").value = document.getElementById("slider6").value;
+			document.getElementById("num7").value = document.getElementById("slider7").value;
+			document.getElementById("num8").value = document.getElementById("slider8").value;
+			document.getElementById("num9").value = document.getElementById("slider9").value;
+
+			}
+	</script>
+
+<style>
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a9cbee;
+}
+
+</style>
+</head>
+<body>
+
+
+<form action = "http://localhost:8080/edit" method = "POST"
+         enctype = "multipart/form-data">
+    <br>
+    smile：<input type="range" name="smile" id="slider1" min="-30" max="30" step="1" value="0" onchange="show()"/>
+    <input type="text" id="num1" size="1"/>
+    <br>
+    age：<input type="range" name="age" id="slider2" min="-30" max="30" step="1" value="0" onchange="show()"/>
+    <input type="text" id="num2" size="1"/>
+    <br>
+    gender：<input type="range" name="gender" id="slider3" min="-30" max="30" step="1" value="0" onchange="show()"/>
+    <input type="text" id="num3" size="1"/>
+    <br>
+    beauty：<input type="range" name="beauty" id="slider4" min="-30" max="30" step="1" value="0" onchange="show()"/>
+    <input type="text" id="num4" size="1"/>
+    <br>
+    angleh：<input type="range" name="angleh" id="slider5" min="-30" max="30" step="1" value="0" onchange="show()"/>
+    <input type="text" id="num5" size="1"/>
+    <br>
+    anglep：<input type="range" name="anglep" id="slider6" min="-30" max="30" step="1" value="0" onchange="show()"/>
+    <input type="text" id="num6" size="1"/>
+    <br>
+    raceblack：<input type="range" name="raceblack" id="slider7" min="0" max="30" step="0.5" value="0" onchange="show()"/>
+    <input type="text" id="num7" size="1"/>
+    <br>
+    raceyellow：<input type="range" name="raceyellow" id="slider8" min="0" max="30" step="0.5" value="0" onchange="show()"/>
+    <input type="text" id="num8" size="1"/>
+    <br>
+    racewhite：<input type="range" name="racewhite" id="slider9" min="0" max="30" step="0.5" value="0" onchange="show()"/>
+    <input type="text" id="num9" size="1"/>
+    <div align="center"><input type = "submit" class="button2" value="提交参数"/></div>
+    <div align="center"><a href="editupload"><input type="button" value="上传新的脸"></a></div>
+    <div align="center" style="position:relative;top:0px">
+    <a href="/"><input type="button" value="home"></a>
+    </div>
+</form>
+<div align="center">
+    <img src="{{ url_for('static',filename='img/edit_face.jpg' )}}" width="512" height="512" align="center" />
+</div>
+
+</body>
+</html>

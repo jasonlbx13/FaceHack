@@ -35,17 +35,21 @@ function reloadPage()
 .button:hover {background-color: #ed3400}
 
 .button:active {
-  background-color: #ff5829;
+  background-color: #288EDD;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
+
 </style>
 {% endblock %}
 {% block body %}
-<div align="center"><img src="../static/random_face.jpg" width="512" height="512" align="center" /></div>
+<div align="center"><img src="../static/img/random_face.jpg" width="512" height="512" align="center" /></div>
 <br>
 <div style="margin:0 auto;width:200px;">
 <input type="button" class="button" value="Make Face!" onclick="reloadPage()" />
 </div>
-
+<br>
+<div align="center" style="position:relative;top:200px">
+<a href="/"><input type="button" value="home"></a>
+</div>
 {% endblock %}
