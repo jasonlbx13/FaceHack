@@ -1,0 +1,33 @@
+﻿{% extends 'base.html' %}
+{% block head %}
+<meta charset="utf-8">
+<title>FaceHack.com</title>
+<font color="white">
+<div align="center"><h1>"Are You Sure To Edit These Face?"</h1></div>
+<style>
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a9cbee;
+}
+</style>
+{% endblock %}
+{% block body %}
+
+<form action = "http://localhost:8080/transform" method = "POST"
+         enctype = "multipart/form-data">
+    <div align="center">
+    <img src="{{ url_for('static',filename='img/trans_src.jpg' )}}" width="512" height="512" align="left" />
+    <img src="{{ url_for('static',filename='img/trans_dst.jpg' )}}" width="512" height="512" align="right" />
+    </div>
+    <br>
+    <div align="center"><input type = "submit" class="button2" value="确认提交"/></div>
+
+</form>
+{% endblock %}
+

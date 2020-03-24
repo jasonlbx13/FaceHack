@@ -1,0 +1,52 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FaceHack.com</title>
+    <div style="left: 800px; position: absolute; top: 100px;">
+        <font color="white">
+            <div align="center"><h1>"Transform Your Face!"</h1></div>
+        </font>
+    </div>
+    <script type="text/javascript">
+		function show(){
+            document.getElementById("num").value = document.getElementById("slider").value;
+			}
+	</script>
+
+<style>
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a9cbee;
+}
+
+</style>
+</head>
+<body>
+
+
+<form action = "http://localhost:8080/merge" method = "POST"
+         enctype = "multipart/form-data">
+    <br>
+    alpha：<input type="range" name="alpha" id="slider" min="0" max="1" step="0.05" value="0" onchange="show()"/>
+    <input type="text" id="num" size="1"/>
+    <br>
+    <div align="center"><input type = "submit" class="button2" value="提交参数"/></div>
+    <div align="center"><a href="tfupload"><input type="button" value="上传新的脸"></a></div>
+    <div align="center" style="position:relative;top:0px">
+    <a href="/"><input type="button" value="home"></a>
+    </div>
+</form>
+<div align="center">
+    <img src="{{ url_for('static',filename='img/merge_face.jpg' )}}" width="512" height="512" align="center" />
+</div>
+
+</body>
+</html>

@@ -88,6 +88,22 @@ class FaceHack():
         PIL.Image.fromarray(images[0], 'RGB').save(
             dnnlib.make_run_dir_path('./static/img/edit_face.jpg'))
 
+    def style_transform(self, pic1, pic2, alpha):
+        pic1[9:] = (1 - alpha) * pic1[9:] + alpha * pic2[9:]
+        with self.graph.as_default():
+            with self.session.as_default():
+                img = self.Gs_network.components.synthesis.run(pic1[np.newaxis, :], **self.Gs_syn_kwargs)
+        img = PIL.Image.fromarray(img[0])
+        img.save('./static/img/transform_face.jpg')
+
+    def merge(self, pic1, pic2, alpha):
+        pic1[:] = (1 - alpha) * pic1[:] + alpha * pic2[:]
+        with self.graph.as_default():
+            with self.session.as_default():
+                img = self.Gs_network.components.synthesis.run(pic1[np.newaxis, :], **self.Gs_syn_kwargs)
+        img = PIL.Image.fromarray(img[0])
+        img.save('./static/img/merge_face.jpg')
+
 
     def make_app(self):
         app = Flask(__name__)
@@ -128,7 +144,7 @@ class FaceHack():
                 f = request.files['file']
                 f.save(npy_dir)
                 self.restore(npy_dir, './static/img/edit_face.jpg')
-                return render_template('upload_down.html')
+                return render_template('upload_done.html')
 
 
         @app.route('/edit', methods=['POST'])
@@ -151,6 +167,57 @@ class FaceHack():
                 self.move_latent(npy_dir, self.Gs_network, self.Gs_syn_kwargs, *feature_book)
                 return render_template('edit_face.html')
 
+        @app.route('/tfupload', methods=['GET', 'POST'])
+        def tfupload():
+            if request.method == 'GET':
+                return render_template('tfupload.html')
+            if request.method == 'POST':
+                npy_dir1 = './static/npy_file/trans_src.npy'
+                npy_dir2 = './static/npy_file/trans_dst.npy'
+                f1 = request.files['file1']
+                f2 = request.files['file2']
+                f1.save(npy_dir1)
+                f2.save(npy_dir2)
+                self.restore(npy_dir1, './static/img/trans_src.jpg')
+                self.restore(npy_dir2, './static/img/trans_dst.jpg')
+                return render_template('upload_done2.html')
+
+        @app.route('/tfupload2', methods=['GET', 'POST'])
+        def tfupload2():
+            if request.method == 'GET':
+                return render_template('tfupload2.html')
+            if request.method == 'POST':
+                npy_dir1 = './static/npy_file/trans_src.npy'
+                npy_dir2 = './static/npy_file/trans_dst.npy'
+                f1 = request.files['file1']
+                f2 = request.files['file2']
+                f1.save(npy_dir1)
+                f2.save(npy_dir2)
+                self.restore(npy_dir1, './static/img/trans_src.jpg')
+                self.restore(npy_dir2, './static/img/trans_dst.jpg')
+                return render_template('upload_done3.html')
+
+        @app.route('/transform', methods=['POST'])
+        def transform():
+            pic1 = np.load('./static/npy_file/trans_src.npy')
+            pic2 = np.load('./static/npy_file/trans_dst.npy')
+            if len(request.form) != 0:
+                alpha = float(request.form['alpha'])
+            else:
+                alpha = 0
+            self.style_transform(pic1, pic2, alpha)
+            return render_template('transform.html')
+
+        @app.route('/merge', methods=['POST'])
+        def merge():
+            pic1 = np.load('./static/npy_file/trans_src.npy')
+            pic2 = np.load('./static/npy_file/trans_dst.npy')
+            if len(request.form) != 0:
+                alpha = float(request.form['alpha'])
+            else:
+                alpha = 0
+            self.merge(pic1, pic2, alpha)
+            return render_template('merge.html')
 
 
         return app
