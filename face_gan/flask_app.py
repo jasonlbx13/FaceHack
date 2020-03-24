@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import random
 import numpy as np
 import PIL.Image
@@ -11,6 +11,7 @@ import urllib
 import imageio
 import os
 from datetime import timedelta
+import cv2
 import keras.backend.tensorflow_backend as KTF
 import shutil
 from tqdm import tqdm
@@ -54,6 +55,9 @@ class FaceHack():
         self.raceyellow_drt = np.load('latent_directions/race_yellow.npy')
         self.racewhite_drt = np.load('latent_directions/race_white.npy')
         self.glasses_drt = np.load('latent_directions/glasses.npy')
+        self.angry_drt = np.load('latent_directions/emotion_angry.npy')
+        self.sad_drt = np.load('latent_directions/emotion_sad.npy')
+        self.eye_drt = np.load('latent_directions/eyes_open.npy')
 
 
     def random_generate(self):
@@ -104,6 +108,38 @@ class FaceHack():
         img = PIL.Image.fromarray(img[0])
         img.save('./static/img/merge_face.jpg')
 
+    def enhance(self, pic):
+        with self.graph.as_default():
+            with self.session.as_default():
+                for i in range(18):
+                    scale1 = random.uniform(-10., 5.)
+                    scale2 = random.uniform(-5., 5.)
+                    scale3 = random.uniform(-10., 10.)
+                    scale4 = random.uniform(-10., 10.)
+                    scale5 = random.uniform(-15., 15.)
+                    scale6 = random.uniform(-15., 15.)
+                    latent_vector = pic[np.newaxis, :]
+                    new_latent_vector = latent_vector.copy()
+                    new_latent_vector[0][:8] = (latent_vector[0] + scale1 * self.smile_drt + scale2 * self.eye_drt
+                                                + scale3 * self.angleh_drt + scale4 * self.anglep_drt
+                                                + scale5 * self.angry_drt + scale6 * self.sad_drt)[:8]
+                    img = self.Gs_network.components.synthesis.run(new_latent_vector, **self.Gs_syn_kwargs)
+                    img = PIL.Image.fromarray(img[0])
+                    img.save('./static/img/enhance/{}.png'.format(str(i).zfill(4)))
+
+    def puzzle(self, img_dir, h, l):
+        img_name_book = sorted(os.listdir(img_dir))
+        print(img_name_book)
+        img_book = [cv2.resize(cv2.imread('{}/{}'.format(img_dir, img_name)), (512, 512)) for img_name in img_name_book]
+        for i in range(h):
+            tmp = img_book[i * l]
+            for j in range(1, l):
+                tmp = np.hstack((tmp, img_book[i * l + j]))
+            if i == 0:
+                res = tmp
+            else:
+                res = np.vstack((res, tmp))
+        cv2.imwrite('./static/img/enhance/puzzle.jpg', res)
 
     def make_app(self):
         app = Flask(__name__)
@@ -145,7 +181,6 @@ class FaceHack():
                 f.save(npy_dir)
                 self.restore(npy_dir, './static/img/edit_face.jpg')
                 return render_template('upload_done.html')
-
 
         @app.route('/edit', methods=['POST'])
         def edit_face():
@@ -209,7 +244,7 @@ class FaceHack():
             return render_template('transform.html')
 
         @app.route('/merge', methods=['POST'])
-        def merge():
+        def merge_face():
             pic1 = np.load('./static/npy_file/trans_src.npy')
             pic2 = np.load('./static/npy_file/trans_dst.npy')
             if len(request.form) != 0:
@@ -218,6 +253,29 @@ class FaceHack():
                 alpha = 0
             self.merge(pic1, pic2, alpha)
             return render_template('merge.html')
+
+        @app.route('/enhanceupload', methods=['GET', 'POST'])
+        def enhance_upload():
+            if request.method == 'GET':
+                return render_template('enhance_upload.html')
+            if request.method == 'POST':
+                npy_dir = './static/npy_file/enhance_face.npy'
+                f = request.files['file']
+                f.save(npy_dir)
+                self.restore(npy_dir, './static/img/enhance_face.jpg')
+                return render_template('upload_done4.html')
+
+        @app.route('/enhance', methods=['GET', 'POST'])
+        def enhance_face():
+            pic = np.load('./static/npy_file/enhance_face.npy')
+            self.enhance(pic)
+            self.puzzle('./static/img/enhance', 3, 6)
+            return render_template('enhance.html')
+
+        @app.route('/download')
+        def download():
+            return send_from_directory("./tmp/", filename="npy_file.tar", as_attachment=True)
+
 
 
         return app
