@@ -1,0 +1,50 @@
+﻿{% extends 'base.html' %}
+{% block head %}
+<meta charset="utf-8">
+<title>FaceHack.com</title>
+<style>
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a9cbee;
+}
+.button2 {
+    background-color: #474ce4;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	border-radius: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+</style>
+<script type="text/javascript">
+
+function reloadPage()
+    {
+        window.location.href=window.location.href
+        window.location.reload()
+    }
+</script>
+{% endblock %}
+{% block body %}
+      <form action = "http://localhost:8080/enhanceupload" method = "POST"
+         enctype = "multipart/form-data">
+          <div align="center"><input type = "file" name = "file" /></div>
+          <br>
+          <div align="center"><input type = "submit" class="button2" value="上传"/></div>
+      </form>
+{% endblock %}
+

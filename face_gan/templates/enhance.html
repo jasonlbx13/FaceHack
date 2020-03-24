@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block head %}
+<font color="black">
+<div align="center"><h1>"Your enhance faces are here!"</h1></div>
+
+<script type="text/javascript">
+function reloadPage()
+    {
+        window.location.href=window.location.href
+        window.location.reload()
+    }
+</script>
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a9cbee;
+    }
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #be2a00;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+  margin:0 auto
+}
+
+.button:hover {background-color: #ed3400}
+
+.button:active {
+  background-color: #288EDD;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+</style>
+<font color="white">
+<div align="center"><h1>"Face Enhance By your npy"</h1></div>
+</font>
+
+{% endblock %}
+
+{% block body %}
+    <div align="center">
+        <img src="{{ url_for('static',filename='img/enhance/puzzle.jpg' )}}" width="1200" height="600" align="center" />
+    </div>
+    <br>
+    <div style="margin:0 auto;width:200px;">
+        <input type="button" class="button" value="Another Batch" onclick="reloadPage()" />
+    </div>
+    <br>
+    <div align="center">
+    <a href="enhanceupload"><input type="button" value="上传新的脸"></a>
+        <br>
+        <a href="/"><input type="button" value="home"></a>
+    </div>
+
+{% endblock %}

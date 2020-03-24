@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <title>FaceHack.com</title>
 <font color="white">
-<div align="center"><h1>"Are You Sure To Merge These Face?"</h1></div>
+<div align="center"><h1>"Are You Sure To Enhance This Face?"</h1></div>
 <style>
 body {
   margin: 0;
@@ -19,15 +19,15 @@ body {
 {% endblock %}
 {% block body %}
 
-<form action = "http://localhost:8080/merge" method = "POST"
+<form action = "http://localhost:8080/enhance" method = "POST"
          enctype = "multipart/form-data">
-    <div align="center">
-    <img src="{{ url_for('static',filename='img/trans_src.jpg' )}}" width="512" height="512" align="left" />
-    <img src="{{ url_for('static',filename='img/trans_dst.jpg' )}}" width="512" height="512" align="right" />
-    </div>
+<div align="center">
+    <img src="{{ url_for('static',filename='img/enhance_face.jpg' )}}" width="512" height="512" align="center" />
+</div>
     <br>
     <div align="center"><input type = "submit" class="button2" value="确认提交"/></div>
 
 </form>
 {% endblock %}
+
 
