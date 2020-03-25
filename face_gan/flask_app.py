@@ -276,11 +276,7 @@ class FaceHack():
         def download():
             return send_from_directory("./tmp/", filename="npy_file.tar", as_attachment=True)
 
-
-
         return app
-
-
 
 
 if __name__ == '__main__':

@@ -1,0 +1,7 @@
+tensorflow-gpu==1.14.0
+keras==2.2.4
+numpy==1.17.0
+flask==1.1.1
+flask-limiter==1.2.1
+tqdm==4.36.1
+streamlit==0.56.0

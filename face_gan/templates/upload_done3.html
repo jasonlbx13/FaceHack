@@ -19,7 +19,7 @@ body {
 {% endblock %}
 {% block body %}
 
-<form action = "http://localhost:8080/merge" method = "POST"
+<form action = "/merge" method = "POST"
          enctype = "multipart/form-data">
     <div align="center">
     <img src="{{ url_for('static',filename='img/trans_src.jpg' )}}" width="512" height="512" align="left" />

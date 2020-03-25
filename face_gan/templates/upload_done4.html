@@ -19,7 +19,7 @@ body {
 {% endblock %}
 {% block body %}
 
-<form action = "http://localhost:8080/enhance" method = "POST"
+<form action = "/enhance" method = "POST"
          enctype = "multipart/form-data">
 <div align="center">
     <img src="{{ url_for('static',filename='img/enhance_face.jpg' )}}" width="512" height="512" align="center" />
