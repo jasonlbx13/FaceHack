@@ -165,9 +165,13 @@ class FaceHack():
                 npy_dir = './static/npy_file/genface.npy'
                 if os.path.exists(npy_dir):
                     os.remove(npy_dir)
-                f = request.files['file']
-                f.save(npy_dir)
-                self.restore(npy_dir, './static/img/restore_face.jpg')
+                if request.form['select']=='None':
+                    f = request.files['file']
+                    f.save(npy_dir)
+                    self.restore(npy_dir, './static/img/restore_face.jpg')
+                else:
+                    name = request.form['select']
+                    self.restore('./static/npy_file/{}.npy'.format(name), './static/img/restore_face.jpg')
                 return render_template('restore_face.html')
             return render_template('upload.html')
 
@@ -177,9 +181,15 @@ class FaceHack():
                 return render_template('edit_upload.html')
             if request.method == 'POST':
                 npy_dir = './static/npy_file/edit_face.npy'
-                f = request.files['file']
-                f.save(npy_dir)
-                self.restore(npy_dir, './static/img/edit_face.jpg')
+                if request.form['select'] == 'None':
+                    f = request.files['file']
+                    f.save(npy_dir)
+                    self.restore(npy_dir, './static/img/edit_face.jpg')
+                else:
+                    name = request.form['select']
+                    self.restore('./static/npy_file/{}.npy'.format(name), './static/img/edit_face.jpg')
+                    npfile = np.load('./static/npy_file/{}.npy'.format(name))
+                    np.save(npy_dir, npfile)
                 return render_template('upload_done.html')
 
         @app.route('/edit', methods=['POST'])
@@ -209,12 +219,24 @@ class FaceHack():
             if request.method == 'POST':
                 npy_dir1 = './static/npy_file/trans_src.npy'
                 npy_dir2 = './static/npy_file/trans_dst.npy'
-                f1 = request.files['file1']
-                f2 = request.files['file2']
-                f1.save(npy_dir1)
-                f2.save(npy_dir2)
-                self.restore(npy_dir1, './static/img/trans_src.jpg')
-                self.restore(npy_dir2, './static/img/trans_dst.jpg')
+                if request.form['select1'] == 'None':
+                    f1 = request.files['file1']
+                    f1.save(npy_dir1)
+                    self.restore(npy_dir1, './static/img/trans_src.jpg')
+                else:
+                    name1 = request.form['select1']
+                    self.restore('./static/npy_file/{}.npy'.format(name1), './static/img/trans_src.jpg')
+                    npfile1 = np.load('./static/npy_file/{}.npy'.format(name1))
+                    np.save(npy_dir1, npfile1)
+                if request.form['select2'] == 'None':
+                    f2 = request.files['file2']
+                    f2.save(npy_dir2)
+                    self.restore(npy_dir2, './static/img/trans_dst.jpg')
+                else:
+                    name2 = request.form['select2']
+                    self.restore('./static/npy_file/{}.npy'.format(name2), './static/img/trans_dst.jpg')
+                    npfile2 = np.load('./static/npy_file/{}.npy'.format(name2))
+                    np.save(npy_dir2, npfile2)
                 return render_template('upload_done2.html')
 
         @app.route('/tfupload2', methods=['GET', 'POST'])
@@ -222,14 +244,26 @@ class FaceHack():
             if request.method == 'GET':
                 return render_template('tfupload2.html')
             if request.method == 'POST':
-                npy_dir1 = './static/npy_file/trans_src.npy'
-                npy_dir2 = './static/npy_file/trans_dst.npy'
-                f1 = request.files['file1']
-                f2 = request.files['file2']
-                f1.save(npy_dir1)
-                f2.save(npy_dir2)
-                self.restore(npy_dir1, './static/img/trans_src.jpg')
-                self.restore(npy_dir2, './static/img/trans_dst.jpg')
+                npy_dir1 = './static/npy_file/merge_src.npy'
+                npy_dir2 = './static/npy_file/merge_dst.npy'
+                if request.form['select1'] == 'None':
+                    f1 = request.files['file1']
+                    f1.save(npy_dir1)
+                    self.restore(npy_dir1, './static/img/merge_src.jpg')
+                else:
+                    name1 = request.form['select1']
+                    self.restore('./static/npy_file/{}.npy'.format(name1), './static/img/merge_src.jpg')
+                    npfile1 = np.load('./static/npy_file/{}.npy'.format(name1))
+                    np.save(npy_dir1, npfile1)
+                if request.form['select2'] == 'None':
+                    f2 = request.files['file2']
+                    f2.save(npy_dir2)
+                    self.restore(npy_dir2, './static/img/merge_dst.jpg')
+                else:
+                    name2 = request.form['select2']
+                    self.restore('./static/npy_file/{}.npy'.format(name2), './static/img/merge_dst.jpg')
+                    npfile2 = np.load('./static/npy_file/{}.npy'.format(name2))
+                    np.save(npy_dir2, npfile2)
                 return render_template('upload_done3.html')
 
         @app.route('/transform', methods=['POST'])
@@ -245,8 +279,8 @@ class FaceHack():
 
         @app.route('/merge', methods=['POST'])
         def merge_face():
-            pic1 = np.load('./static/npy_file/trans_src.npy')
-            pic2 = np.load('./static/npy_file/trans_dst.npy')
+            pic1 = np.load('./static/npy_file/merge_src.npy')
+            pic2 = np.load('./static/npy_file/merge_dst.npy')
             if len(request.form) != 0:
                 alpha = float(request.form['alpha'])
             else:
@@ -260,9 +294,15 @@ class FaceHack():
                 return render_template('enhance_upload.html')
             if request.method == 'POST':
                 npy_dir = './static/npy_file/enhance_face.npy'
-                f = request.files['file']
-                f.save(npy_dir)
-                self.restore(npy_dir, './static/img/enhance_face.jpg')
+                if request.form['select'] == 'None':
+                    f = request.files['file']
+                    f.save(npy_dir)
+                    self.restore(npy_dir, './static/img/enhance_face.jpg')
+                else:
+                    name = request.form['select']
+                    self.restore('./static/npy_file/{}.npy'.format(name), './static/img/enhance_face.jpg')
+                    npfile = np.load('./static/npy_file/{}.npy'.format(name))
+                    np.save(npy_dir, npfile)
                 return render_template('upload_done4.html')
 
         @app.route('/enhance', methods=['GET', 'POST'])
